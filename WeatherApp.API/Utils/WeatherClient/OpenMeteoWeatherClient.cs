@@ -9,9 +9,9 @@ public class OpenMeteoWeatherClient : IWeatherClient
 {
     private readonly HttpClient _httpClient;
 
-    public OpenMeteoWeatherClient(HttpClient httpClient)
+    public OpenMeteoWeatherClient(IHttpClientFactory httpClientFactory)
     {
-        _httpClient = httpClient;
+        _httpClient = httpClientFactory.CreateClient(nameof(OpenMeteoWeatherClient));
     }
 
     public async Task<CurrentWeather> GetCurrentWeatherAsync(Location location)
