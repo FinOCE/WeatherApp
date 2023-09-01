@@ -1,6 +1,6 @@
-﻿using WeatherApp.API.Models;
+﻿using WeatherApp.Server.Models;
 
-namespace WeatherApp.API.Utils.WeatherClient;
+namespace WeatherApp.Server.Utils.WeatherClient;
 
 /// <summary>
 /// A weather client that fetches data from Open-Meteo.

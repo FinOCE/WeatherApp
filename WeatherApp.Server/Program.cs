@@ -1,4 +1,5 @@
-using WeatherApp.API.Utils.WeatherClient;
+using WeatherApp.Server.Services;
+using WeatherApp.Server.Utils.WeatherClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<IWeatherClient, OpenMeteoWeatherClient>();
+builder.Services.AddScoped<IWeatherService, WeatherService>();
 
 var app = builder.Build();
 

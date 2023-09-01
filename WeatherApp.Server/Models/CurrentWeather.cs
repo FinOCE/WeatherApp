@@ -1,4 +1,4 @@
-﻿namespace WeatherApp.API.Models;
+﻿namespace WeatherApp.Server.Models;
 
 /// <summary>
 /// The current weather for a given location.

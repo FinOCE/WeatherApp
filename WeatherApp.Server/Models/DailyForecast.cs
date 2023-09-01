@@ -1,4 +1,4 @@
-﻿namespace WeatherApp.API.Models;
+﻿namespace WeatherApp.Server.Models;
 
 /// <summary>
 /// The daily weather forecast for a given location.

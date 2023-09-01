@@ -1,4 +1,4 @@
-﻿namespace WeatherApp.API.Models;
+﻿namespace WeatherApp.Server.Models;
 
 /// <summary>
 /// A location on Earth, represented by latitude and longitude.
