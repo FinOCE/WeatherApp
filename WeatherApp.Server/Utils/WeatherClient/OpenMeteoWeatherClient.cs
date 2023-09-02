@@ -126,12 +126,12 @@ public class OpenMeteoWeatherClient : IWeatherClient
         }
     }
 
-    public async Task<DailyForecast> GetCurrentDayForecast(Location location)
+    public async Task<DailyForecast> GetCurrentDayForecastAsync(Location location)
     {
         return (await GetDailyForecastAsync(location))[0];
     }
 
-    public async Task<HourlyForecast[]> GetCurrentDayHourlyForecast(Location location)
+    public async Task<HourlyForecast[]> GetCurrentDayHourlyForecastAsync(Location location)
     {
         return (await GetHourlyForecastAsync(location))[0..24];
     }

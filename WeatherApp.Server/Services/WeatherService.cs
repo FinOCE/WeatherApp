@@ -31,7 +31,7 @@ public interface IWeatherService
     /// </summary>
     /// <param name="location">The location to get forecast data for</param>
     /// <returns>The current day's forecast for the given location</returns>
-    Task<DailyForecast> GetCurrentDayForecast(Location location);
+    Task<DailyForecast> GetCurrentDayForecastAsync(Location location);
 
     /// <summary>
     /// Get the weather forecast at the given location for the current day with 
@@ -39,7 +39,7 @@ public interface IWeatherService
     /// </summary>
     /// <param name="location">The location to get forecast data for</param>
     /// <returns>The current day's hourly forecast for the given location</returns>
-    Task<HourlyForecast[]> GetCurrentDayHourlyForecast(Location location);
+    Task<HourlyForecast[]> GetCurrentDayHourlyForecastAsync(Location location);
 }
 
 public class WeatherService : IWeatherService
@@ -66,14 +66,14 @@ public class WeatherService : IWeatherService
         return await _weatherClient.GetHourlyForecastAsync(location);
     }
 
-    public async Task<DailyForecast> GetCurrentDayForecast(Location location)
+    public async Task<DailyForecast> GetCurrentDayForecastAsync(Location location)
     {
-        return await _weatherClient.GetCurrentDayForecast(location);
+        return await _weatherClient.GetCurrentDayForecastAsync(location);
     }
 
-    public async Task<HourlyForecast[]> GetCurrentDayHourlyForecast(Location location)
+    public async Task<HourlyForecast[]> GetCurrentDayHourlyForecastAsync(Location location)
     {
-        return await _weatherClient.GetCurrentDayHourlyForecast(location);
+        return await _weatherClient.GetCurrentDayHourlyForecastAsync(location);
     }
 
     // In the current state you could just use the client directly, but this
