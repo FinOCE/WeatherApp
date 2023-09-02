@@ -19,7 +19,15 @@ public class Cardinal
     {
         get
         {
-            return Angle switch
+            double angle = Angle;
+
+            while (angle < 0)
+                angle += 360;
+
+            while (angle > 360)
+                angle -= 360;
+            
+            return angle switch
             {
                 var x when x >= 0 && x < 11.25 => "North",
                 var x when x >= 11.25 && x < 33.75 => "North-Northeast",
@@ -49,11 +57,19 @@ public class Cardinal
     /// degrees in either direction of the exact point. For example, E is at 90 
     /// degrees, but is displayed for values in [78.75, 101.25).
     /// </summary>
-    public string DirectionInitials
+    public string DirectionInitial
     {
         get
         {
-            return Angle switch
+            double angle = Angle;
+
+            while (angle < 0)
+                angle += 360;
+
+            while (angle > 360)
+                angle -= 360;
+            
+            return angle switch
             {
                 var x when x >= 0 && x < 11.25 => "N",
                 var x when x >= 11.25 && x < 33.75 => "NNE",
