@@ -1,8 +1,9 @@
 import { API } from "../types/API"
+import { Coordinate } from "../types/Coordinate"
 
 type LocationEntryProps = {
   location: Record<keyof API.Location, string>
-  realCoords: { latitude: number; longitude: number } | null
+  realCoords: Coordinate | null
   setLocation: (location: Record<keyof API.Location, string>) => void
   publish: () => void
 }

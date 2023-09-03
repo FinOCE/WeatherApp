@@ -4,7 +4,7 @@ import WeekPreview, {
   WeekPreviewFallback,
   WeekPreviewLoading
 } from "./components/WeekPreview"
-import Suspenseful, { Suspended } from "./components/Suspenseful"
+import Suspenseful from "./components/Suspenseful"
 import CurrentDisplay, {
   CurrentDisplayFallback,
   CurrentDisplayLoading
@@ -15,8 +15,8 @@ import HourPreview, {
 } from "./components/HourPreview"
 import LocationEntry from "./components/LocationEntry"
 import { Draft } from "./types/Draft"
-
-const SERVER_URL = "https://localhost:7252"
+import useWeatherData from "./hooks/useWeatherData"
+import { Coordinate } from "./types/Coordinate"
 
 export default function App() {
   const [location, setLocation] = useState<Draft<API.Location>>({
@@ -34,20 +34,10 @@ export default function App() {
     }
   })
 
-  const [realCoords, setRealCoords] = useState<{
-    latitude: number
-    longitude: number
-  } | null>(null)
+  const { currentWeather, dailyForecast, hourlyForecast, reload } =
+    useWeatherData(location.published)
 
-  const [currentWeather, setCurrentWeather] = useState<
-    Suspended<API.CurrentWeather>
-  >({})
-  const [dailyForecast, setDailyForecast] = useState<
-    Suspended<API.DailyForecast[]>
-  >({})
-  const [hourlyForecast, setHourlyForecast] = useState<
-    Suspended<API.HourlyForecast[]>
-  >({})
+  const [realCoords, setRealCoords] = useState<Coordinate | null>(null)
 
   useEffect(() => {
     if (navigator.geolocation)
@@ -71,25 +61,6 @@ export default function App() {
       })
   }, [])
 
-  useEffect(() => {
-    const queryParams = `?name=${location.published.name}&lat=${location.published.latitude}&long=${location.published.longitude}&tz=${location.published.timezone}`
-
-    fetch(`${SERVER_URL}/forecast/current${queryParams}`)
-      .then(res => res.json())
-      .then((result: API.CurrentWeather) => setCurrentWeather({ result }))
-      .catch(error => setCurrentWeather({ error }))
-
-    fetch(`${SERVER_URL}/forecast${queryParams}&type=daily`)
-      .then(res => res.json())
-      .then((result: API.DailyForecast[]) => setDailyForecast({ result }))
-      .catch(error => setDailyForecast({ error }))
-
-    fetch(`${SERVER_URL}/forecast${queryParams}&type=hourly`)
-      .then(res => res.json())
-      .then((result: API.HourlyForecast[]) => setHourlyForecast({ result }))
-      .catch(error => setHourlyForecast({ error }))
-  }, [location.published])
-
   return (
     <div>
       <LocationEntry
@@ -107,9 +78,7 @@ export default function App() {
               longitude: Number(prev.draft.longitude)
             }
           }))
-          setCurrentWeather({})
-          setDailyForecast({})
-          setHourlyForecast({})
+          reload()
         }}
       />
 
