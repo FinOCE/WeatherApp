@@ -11,7 +11,7 @@ public class WeatherControllerTests
     public async Task GetForecast_GetsDaily()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var dailyForecasts = new DailyForecast[7]
             .Select(_ => new DailyForecast(
@@ -49,7 +49,8 @@ public class WeatherControllerTests
                 { "type", "daily" },
                 { "lat", location.Latitude.ToString() },
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -69,7 +70,7 @@ public class WeatherControllerTests
     public async Task GetForecast_GetsHourly()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var hourlyForecasts = new HourlyForecast[168]
             .Select(_ => new HourlyForecast(
@@ -106,7 +107,8 @@ public class WeatherControllerTests
                 { "type", "hourly" },
                 { "lat", location.Latitude.ToString() },
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -126,7 +128,7 @@ public class WeatherControllerTests
     public async Task GetForecast_GetsCurrentDay()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var dailyForecast = new DailyForecast(
             location,
@@ -162,7 +164,8 @@ public class WeatherControllerTests
                 { "type", "current-daily" },
                 { "lat", location.Latitude.ToString() },
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -181,7 +184,7 @@ public class WeatherControllerTests
     public async Task GetForecast_GetsCurrentDayHourly()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var hourlyForecasts = new HourlyForecast[24]
             .Select(_ => new HourlyForecast(
@@ -218,7 +221,8 @@ public class WeatherControllerTests
                 { "type", "current-hourly" },
                 { "lat", location.Latitude.ToString() },
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -238,7 +242,7 @@ public class WeatherControllerTests
     public async Task GetForecast_FailsOnInvalidType()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
         
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -256,7 +260,8 @@ public class WeatherControllerTests
                 { "type", "invalid" },
                 { "lat", location.Latitude.ToString() },
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -270,7 +275,7 @@ public class WeatherControllerTests
     public async Task GetForecast_FailsOnInvalidLatitude()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -288,7 +293,8 @@ public class WeatherControllerTests
                 { "type", "daily" },
                 { "lat", "invalid" },
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -302,7 +308,7 @@ public class WeatherControllerTests
     public async Task GetForecast_FailsOnInvalidLongitude()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -320,7 +326,8 @@ public class WeatherControllerTests
                 { "type", "daily" },
                 { "lat", location.Latitude.ToString() },
                 { "long", "invalid" },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -334,7 +341,7 @@ public class WeatherControllerTests
     public async Task GetForecast_FailsOnMissingType()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -351,7 +358,8 @@ public class WeatherControllerTests
             {
                 { "lat", location.Latitude.ToString() },
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -365,7 +373,7 @@ public class WeatherControllerTests
     public async Task GetForecast_FailsOnMissingLatitude()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -382,7 +390,8 @@ public class WeatherControllerTests
             {
                 { "type", "daily" },
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -396,7 +405,7 @@ public class WeatherControllerTests
     public async Task GetForecast_FailsOnMissingLongitude()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -413,7 +422,8 @@ public class WeatherControllerTests
             {
                 { "type", "daily" },
                 { "lat", location.Latitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -427,7 +437,7 @@ public class WeatherControllerTests
     public async Task GetForecast_FailsOnMissingName()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -444,7 +454,40 @@ public class WeatherControllerTests
             {
                 { "type", "daily" },
                 { "lat", location.Latitude.ToString() },
-                { "long", location.Longitude.ToString() }
+                { "long", location.Longitude.ToString() },
+                { "tz", location.Timezone }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
+    }
+    
+    [TestMethod]
+    public async Task GetForecast_FailsOnMissingTimezone()
+    {
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "daily" },
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
             });
 
         // Act
@@ -458,7 +501,7 @@ public class WeatherControllerTests
     public async Task GetCurrent_GetsCurrentWeather()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var currentWeather = new CurrentWeather(
             location,
@@ -488,7 +531,8 @@ public class WeatherControllerTests
             {
                 { "lat", location.Latitude.ToString() },
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -507,7 +551,7 @@ public class WeatherControllerTests
     public async Task GetCurrent_FailsOnInvalidLatitude()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -524,7 +568,8 @@ public class WeatherControllerTests
             {
                 { "lat", "invalid" },
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -538,7 +583,7 @@ public class WeatherControllerTests
     public async Task GetCurrent_FailsOnInvalidLongitude()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -555,7 +600,8 @@ public class WeatherControllerTests
             {
                 { "lat", location.Latitude.ToString() },
                 { "long", "invalid" },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -569,7 +615,7 @@ public class WeatherControllerTests
     public async Task GetCurrent_FailsOnMissingLatitude()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -585,7 +631,8 @@ public class WeatherControllerTests
             new Dictionary<string, StringValues>()
             {
                 { "long", location.Longitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -599,7 +646,7 @@ public class WeatherControllerTests
     public async Task GetCurrent_FailsOnMissingLongitude()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -615,7 +662,8 @@ public class WeatherControllerTests
             new Dictionary<string, StringValues>()
             {
                 { "lat", location.Latitude.ToString() },
-                { "name", location.Name }
+                { "name", location.Name },
+                { "tz", location.Timezone }
             });
 
         // Act
@@ -629,7 +677,7 @@ public class WeatherControllerTests
     public async Task GetCurrent_FailsOnMissingName()
     {
         // Arrange
-        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
 
         var logger = Substitute.For<ILogger<WeatherController>>();
         var weatherService = Substitute.For<IWeatherService>();
@@ -645,7 +693,39 @@ public class WeatherControllerTests
             new Dictionary<string, StringValues>()
             {
                 { "lat", location.Latitude.ToString() },
-                { "long", location.Longitude.ToString() }
+                { "long", location.Longitude.ToString() },
+                { "tz", location.Timezone }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetCurrent();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
+    }
+    
+    [TestMethod]
+    public async Task GetCurrent_FailsOnMissingTimezone()
+    {
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia", "AEST");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
             });
 
         // Act

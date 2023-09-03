@@ -10,7 +10,7 @@ public class WeatherServiceTests
     public async Task GetCurrentWeatherAsync_GetsCurrentWeather()
     {
         // Arrange
-        Location location = new(0, 0, "Location");
+        Location location = new(0, 0, "Location", "AEST");
         
         CurrentWeather currentWeather = new(
             location,
@@ -39,7 +39,7 @@ public class WeatherServiceTests
     public async Task GetDailyForecastAsync_GetsDailyForecast()
     {
         // Arrange
-        Location location = new(0, 0, "Location");
+        Location location = new(0, 0, "Location", "AEST");
 
         DailyForecast dailyForecast = new(
             location,
@@ -81,7 +81,7 @@ public class WeatherServiceTests
     public async Task GetHourlyForecastAsync_GetsHourlyForecast()
     {
         // Arrange
-        Location location = new(0, 0, "Location");
+        Location location = new(0, 0, "Location", "AEST");
 
         HourlyForecast hourlyForecast = new(
             location,
@@ -122,7 +122,7 @@ public class WeatherServiceTests
     public async Task GetCurrentDayForecastAsync_GetsCurrentDayForecast()
     {
         // Arrange
-        Location location = new(0, 0, "Location");
+        Location location = new(0, 0, "Location", "AEST");
 
         DailyForecast dailyForecast = new(
             location,
@@ -156,7 +156,7 @@ public class WeatherServiceTests
     public async Task GetCurrentDayHourlyForecastAsync_GetsCurrentDayHourlyForecast()
     {
         // Arrange
-        Location location = new(0, 0, "Location");
+        Location location = new(0, 0, "Location", "AEST");
 
         HourlyForecast hourlyForecast = new(
             location,

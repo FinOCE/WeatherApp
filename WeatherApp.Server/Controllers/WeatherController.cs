@@ -70,11 +70,24 @@ public class WeatherController : ControllerBase
         {
             errors.Add("The query param 'name' is required");
         }
+        
+        string timezone = null!;
+        try
+        {
+            if (!Request.Query.TryGetValue("tz", out StringValues rawTimezone))
+                throw new IndexOutOfRangeException();
+            
+            timezone = rawTimezone[0];
+        }
+        catch (IndexOutOfRangeException)
+        {
+            errors.Add("The query param 'tz' is required");
+        }
 
         if (errors.Count > 0)
             return new BadRequestObjectResult(errors.ToArray());
 
-        Location location = new(latitude, longitude, name);
+        Location location = new(latitude, longitude, name, timezone);
 
         // Get forecast depending on type
         try
@@ -149,24 +162,37 @@ public class WeatherController : ControllerBase
             errors.Add("The query param 'long' is required");
         else if (!double.TryParse(rawLongitude[0], out longitude))
             errors.Add("The query param 'long' must be a number");
-
-        if (!Request.Query.TryGetValue("name", out StringValues rawName))
-            errors.Add("The query param 'name' is required");
-
+        
         string name = null!;
         try
         {
+            if (!Request.Query.TryGetValue("name", out StringValues rawName))
+                throw new IndexOutOfRangeException();
+            
             name = rawName[0];
         }
         catch (IndexOutOfRangeException)
         {
-            errors.Add("The query param 'type' is required");
+            errors.Add("The query param 'name' is required");
+        }
+        
+        string timezone = null!;
+        try
+        {
+            if (!Request.Query.TryGetValue("tz", out StringValues rawTimezone))
+                throw new IndexOutOfRangeException();
+            
+            timezone = rawTimezone[0];
+        }
+        catch (IndexOutOfRangeException)
+        {
+            errors.Add("The query param 'tz' is required");
         }
 
         if (errors.Count > 0)
             return new BadRequestObjectResult(errors.ToArray());
 
-        Location location = new(latitude, longitude, name);
+        Location location = new(latitude, longitude, name, timezone);
 
         // Get current weather
         try

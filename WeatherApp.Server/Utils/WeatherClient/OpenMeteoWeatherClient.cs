@@ -19,7 +19,7 @@ public class OpenMeteoWeatherClient : IWeatherClient
         try
         {
             HttpResponseMessage res = await _httpClient.GetAsync(
-                $"https://api.open-meteo.com/v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&current_weather=true&timezone=GMT");
+                $"https://api.open-meteo.com/v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&current_weather=true&timezone={location.Timezone}");
             
             string json = await res.Content.ReadAsStringAsync();
             var weather = JsonSerializer.Deserialize<OpenMeteoCurrentWeatherResponse>(
@@ -37,8 +37,10 @@ public class OpenMeteoWeatherClient : IWeatherClient
                 weather.CurrentWeather.IsDay == 1,
                 weather.CurrentWeather.Time);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.StackTrace);
             // Throw generic argument exception if anything goes wrong
             throw new ArgumentException(
                 "Unable to get the current weather for the given location");
@@ -50,7 +52,7 @@ public class OpenMeteoWeatherClient : IWeatherClient
         try
         {
             HttpResponseMessage res = await _httpClient.GetAsync(
-                $"https://api.open-meteo.com/v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_probability_max,windspeed_10m_max,winddirection_10m_dominant&timezone=GMT");
+                $"https://api.open-meteo.com/v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_probability_max,windspeed_10m_max,winddirection_10m_dominant&timezone={location.Timezone}");
 
             string json = await res.Content.ReadAsStringAsync();
             var forecast =
@@ -92,7 +94,7 @@ public class OpenMeteoWeatherClient : IWeatherClient
         try
         {
             HttpResponseMessage res = await _httpClient.GetAsync(
-                $"https://api.open-meteo.com/v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&hourly=temperature_2m,apparent_temperature,precipitation_probability,weathercode,visibility,uv_index,is_day,windspeed_1000hPa,winddirection_1000hPa&timezone=GMT&models=best_match");
+                $"https://api.open-meteo.com/v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&hourly=temperature_2m,apparent_temperature,precipitation_probability,weathercode,visibility,uv_index,is_day,windspeed_1000hPa,winddirection_1000hPa&timezone={location.Timezone}&models=best_match");
 
             string json = await res.Content.ReadAsStringAsync();
             var forecast = JsonSerializer.Deserialize<OpenMeteoHourlyForecastResponse>(
@@ -161,7 +163,7 @@ public class OpenMeteoCurrentWeatherResponse
     public string TimezoneAbbreviation { get; set; } = null!;
 
     [JsonPropertyName("elevation")]
-    public int Elevation { get; set; }
+    public double Elevation { get; set; }
 
     [JsonPropertyName("current_weather")]
     public OpenMeteoCurrentWeather CurrentWeather { get; set; } = null!;

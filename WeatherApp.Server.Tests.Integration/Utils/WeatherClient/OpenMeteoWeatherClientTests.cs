@@ -13,7 +13,7 @@ public class OpenMeteoWeatherClientTests
         double windSpeed = 10;
         double windDirection = 60;
         
-        Location location = new(0, 0, "Name");
+        Location location = new(0, 0, "Name", "AEST");
 
         OpenMeteoCurrentWeatherResponse weatherResponse = new()
         {
@@ -57,7 +57,7 @@ public class OpenMeteoWeatherClientTests
     public async Task GetDailyForecastAsync_GetsDailyForecast()
     {
         // Arrange
-        Location location = new(0, 0, "Name");
+        Location location = new(0, 0, "Name", "AEST");
 
         DateTime[] time = new DateTime[7].Select(_ => DateTime.Now).ToArray();
         int[] weatherCode = new int[7].Select(_ => 45).ToArray();
@@ -136,7 +136,7 @@ public class OpenMeteoWeatherClientTests
     public async Task GetHourlyForecastAsync_GetsHourlyForecast()
     {
         // Arrange
-        Location location = new(0, 0, "Name");
+        Location location = new(0, 0, "Name", "AEST");
 
         DateTime[] time = new DateTime[168].Select(_ => DateTime.Now).ToArray();
         double[] temperature = new double[168].Select(_ => 10d).ToArray();
@@ -209,7 +209,7 @@ public class OpenMeteoWeatherClientTests
     public async Task GetCurrentDayForecastAsync_GetsCurrentDayForecast()
     {
         // Arrange
-        Location location = new(0, 0, "Name");
+        Location location = new(0, 0, "Name", "AEST");
 
         DateTime[] time = new DateTime[7].Select(_ => DateTime.Now).ToArray();
         int[] weatherCode = new int[7].Select(_ => 45).ToArray();
@@ -287,7 +287,7 @@ public class OpenMeteoWeatherClientTests
     public async Task GetCurrentDayHourlyForecastAsync_GetsCurrentDayHourlyForecast()
     {
         // Arrange
-        Location location = new(0, 0, "Name");
+        Location location = new(0, 0, "Name", "AEST");
 
         DateTime[] time = new DateTime[168].Select(_ => DateTime.Now).ToArray();
         double[] temperature = new double[168].Select(_ => 10d).ToArray();
