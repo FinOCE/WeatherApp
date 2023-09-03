@@ -1,4 +1,8 @@
-﻿namespace WeatherApp.Server.Controllers;
+﻿using Microsoft.Extensions.Primitives;
+using WeatherApp.Server.Models;
+using WeatherApp.Server.Services;
+
+namespace WeatherApp.Server.Controllers;
 
 [TestClass]
 public class WeatherControllerTests
@@ -6,133 +10,648 @@ public class WeatherControllerTests
     [TestMethod]
     public async Task GetForecast_GetsDaily()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var dailyForecasts = new DailyForecast[7]
+            .Select(_ => new DailyForecast(
+                location,
+                new(0),
+                0,
+                0,
+                0,
+                0,
+                DateTime.Now,
+                DateTime.Now,
+                0,
+                0,
+                0,
+                new(0)))
+            .ToArray();
+        
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherService
+            .GetDailyForecastAsync(Arg.Any<Location>())
+            .Returns(dailyForecasts);
+        
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "daily" },
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+        
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(OkObjectResult));
+        
+        DailyForecast[] content = (DailyForecast[])((OkObjectResult)res).Value!;
+        Assert.AreEqual(
+            location.Name,
+            content[0].Location.Name);
+        Assert.AreEqual(7, content.Length);
     }
 
     [TestMethod]
     public async Task GetForecast_GetsHourly()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var hourlyForecasts = new HourlyForecast[168]
+            .Select(_ => new HourlyForecast(
+                location,
+                new(0),
+                DateTime.Now,
+                0,
+                0,
+                0,
+                0,
+                0,
+                new(0),
+                0,
+                true))
+            .ToArray();
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherService
+            .GetHourlyForecastAsync(Arg.Any<Location>())
+            .Returns(hourlyForecasts);
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "hourly" },
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(OkObjectResult));
+
+        HourlyForecast[] content = (HourlyForecast[])((OkObjectResult)res).Value!;
+        Assert.AreEqual(
+            location.Name,
+            content[0].Location.Name);
+        Assert.AreEqual(168, content.Length);
     }
 
     [TestMethod]
     public async Task GetForecast_GetsCurrentDay()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var dailyForecast = new DailyForecast(
+            location,
+            new(0),
+            0,
+            0,
+            0,
+            0,
+            DateTime.Now,
+            DateTime.Now,
+            0,
+            0,
+            0,
+            new(0));
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherService
+            .GetCurrentDayForecastAsync(Arg.Any<Location>())
+            .Returns(dailyForecast);
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "current-daily" },
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(OkObjectResult));
+
+        DailyForecast content = (DailyForecast)((OkObjectResult)res).Value!;
+        Assert.AreEqual(
+            location.Name,
+            content.Location.Name);
     }
 
     [TestMethod]
     public async Task GetForecast_GetsCurrentDayHourly()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var hourlyForecasts = new HourlyForecast[24]
+            .Select(_ => new HourlyForecast(
+                location,
+                new(0),
+                DateTime.Now,
+                0,
+                0,
+                0,
+                0,
+                0,
+                new(0),
+                0,
+                true))
+            .ToArray();
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherService
+            .GetCurrentDayHourlyForecastAsync(Arg.Any<Location>())
+            .Returns(hourlyForecasts);
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "current-hourly" },
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(OkObjectResult));
+
+        HourlyForecast[] content = (HourlyForecast[])((OkObjectResult)res).Value!;
+        Assert.AreEqual(
+            location.Name,
+            content[0].Location.Name);
+        Assert.AreEqual(24, content.Length);
     }
 
     [TestMethod]
-    public async Task GetForecast_FailsOnInvalidType(string type)
+    public async Task GetForecast_FailsOnInvalidType()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+        
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "invalid" },
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
-    public async Task GetForecast_FailsOnInvalidLatitude(string latitude)
+    public async Task GetForecast_FailsOnInvalidLatitude()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "daily" },
+                { "lat", "invalid" },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
-    public async Task GetForecast_FailsOnInvalidLongitude(string longitude)
+    public async Task GetForecast_FailsOnInvalidLongitude()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "daily" },
+                { "lat", location.Latitude.ToString() },
+                { "long", "invalid" },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
     
     [TestMethod]
     public async Task GetForecast_FailsOnMissingType()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
     public async Task GetForecast_FailsOnMissingLatitude()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "daily" },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
     public async Task GetForecast_FailsOnMissingLongitude()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "daily" },
+                { "lat", location.Latitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
     public async Task GetForecast_FailsOnMissingName()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
-    }
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
 
-    [TestMethod]
-    public async Task GetForecast_FailsOnNoBody()
-    {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "type", "daily" },
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetForecast();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
     public async Task GetCurrent_GetsCurrentWeather()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var currentWeather = new CurrentWeather(
+            location,
+            new(0),
+            0,
+            0,
+            new(0),
+            true,
+            DateTime.Now);
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherService
+            .GetCurrentWeatherAsync(Arg.Any<Location>())
+            .Returns(currentWeather);
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetCurrent();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(OkObjectResult));
+
+        CurrentWeather content = (CurrentWeather)((OkObjectResult)res).Value!;
+        Assert.AreEqual(
+            location.Name,
+            content.Location.Name);
     }
 
     [TestMethod]
-    public async Task GetCurrent_FailsOnInvalidLatitude(string latitude)
+    public async Task GetCurrent_FailsOnInvalidLatitude()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "lat", "invalid" },
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetCurrent();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
-    public async Task GetCurrent_FailsOnInvalidLongitude(string longitude)
+    public async Task GetCurrent_FailsOnInvalidLongitude()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "lat", location.Latitude.ToString() },
+                { "long", "invalid" },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetCurrent();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
     public async Task GetCurrent_FailsOnMissingLatitude()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "long", location.Longitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetCurrent();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
     public async Task GetCurrent_FailsOnMissingLongitude()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
+
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "lat", location.Latitude.ToString() },
+                { "name", location.Name }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetCurrent();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 
     [TestMethod]
     public async Task GetCurrent_FailsOnMissingName()
     {
-        await Task.Delay(1);
-        throw new NotImplementedException();
-    }
+        // Arrange
+        Location location = new(-27.470125, 153.021072, "Brisbane, Australia");
 
-    [TestMethod]
-    public async Task GetCurrent_FailsOnNoBody()
-    {
-        await Task.Delay(1);
-        throw new NotImplementedException();
+        var logger = Substitute.For<ILogger<WeatherController>>();
+        var weatherService = Substitute.For<IWeatherService>();
+        WeatherController weatherController = new(logger, weatherService)
+        {
+            ControllerContext = new()
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        weatherController.Request.Query = new QueryCollection(
+            new Dictionary<string, StringValues>()
+            {
+                { "lat", location.Latitude.ToString() },
+                { "long", location.Longitude.ToString() }
+            });
+
+        // Act
+        IActionResult res = await weatherController.GetCurrent();
+
+        // Assert
+        Assert.IsInstanceOfType(res, typeof(BadRequestObjectResult));
     }
 }

@@ -20,7 +20,7 @@ public class WeatherController : ControllerBase
 
     [HttpGet(Name = "GetForecast")]
     public async Task<IActionResult> GetForecast()
-    {
+    {        
         string[] validTypes = new string[]
         {
             "daily",
@@ -30,34 +30,48 @@ public class WeatherController : ControllerBase
         };
         
         // Validate query params
-        IQueryCollection query = HttpContext.Request.Query;
-
         IList<string> errors = new List<string>();
 
-        if (!query.TryGetValue("type", out StringValues rawType))
+        string type = null!;
+        try
+        {
+            if (!Request.Query.TryGetValue("type", out StringValues rawType))
+                throw new IndexOutOfRangeException();
+            
+            type = rawType[0];
+
+            if (!validTypes.Contains(type))
+                errors.Add("The query param 'type' must be a valid type");
+        }
+        catch (IndexOutOfRangeException)
+        {
             errors.Add("The query param 'type' is required");
-
-        string type = rawType[0];
-
-        if (validTypes.Contains(type))
-            errors.Add("The query param 'type' must be a valid type");
+        }
 
         double latitude = 0;
-        if (!query.TryGetValue("lat", out StringValues rawLatitude))
+        if (!Request.Query.TryGetValue("lat", out StringValues rawLatitude))
             errors.Add("The query param 'lat' is required");
         else if (!double.TryParse(rawLatitude[0], out latitude))
             errors.Add("The query param 'lat' must be a number");
 
         double longitude = 0;
-        if (!query.TryGetValue("long", out StringValues rawLongitude))
+        if (!Request.Query.TryGetValue("long", out StringValues rawLongitude))
             errors.Add("The query param 'long' is required");
         else if (!double.TryParse(rawLongitude[0], out longitude))
             errors.Add("The query param 'long' must be a number");
 
-        if (!query.TryGetValue("name", out StringValues rawName))
+        if (!Request.Query.TryGetValue("name", out StringValues rawName))
             errors.Add("The query param 'name' is required");
 
-        string name = rawName[0];
+        string name = null!;
+        try
+        {
+            name = rawName[0];
+        }
+        catch (IndexOutOfRangeException)
+        {
+            errors.Add("The query param 'type' is required");
+        }
 
         if (errors.Count > 0)
             return new BadRequestObjectResult(errors.ToArray());
@@ -128,26 +142,32 @@ public class WeatherController : ControllerBase
     public async Task<IActionResult> GetCurrent()
     {
         // Validate query params
-        IQueryCollection query = HttpContext.Request.Query;
-
         IList<string> errors = new List<string>();
 
         double latitude = 0;
-        if (!query.TryGetValue("lat", out StringValues rawLatitude))
+        if (!Request.Query.TryGetValue("lat", out StringValues rawLatitude))
             errors.Add("The query param 'lat' is required");
         else if (!double.TryParse(rawLatitude[0], out latitude))
             errors.Add("The query param 'lat' must be a number");
 
         double longitude = 0;
-        if (!query.TryGetValue("long", out StringValues rawLongitude))
+        if (!Request.Query.TryGetValue("long", out StringValues rawLongitude))
             errors.Add("The query param 'long' is required");
         else if (!double.TryParse(rawLongitude[0], out longitude))
             errors.Add("The query param 'long' must be a number");
 
-        if (!query.TryGetValue("name", out StringValues rawName))
+        if (!Request.Query.TryGetValue("name", out StringValues rawName))
             errors.Add("The query param 'name' is required");
 
-        string name = rawName[0];
+        string name = null!;
+        try
+        {
+            name = rawName[0];
+        }
+        catch (IndexOutOfRangeException)
+        {
+            errors.Add("The query param 'type' is required");
+        }
 
         if (errors.Count > 0)
             return new BadRequestObjectResult(errors.ToArray());
