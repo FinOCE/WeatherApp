@@ -143,7 +143,7 @@ public class OpenMeteoWeatherClientTests
         double[] apparentTemperature = new double[168].Select(_ => 0d).ToArray();
         int[] precipitationProbability = new int[168].Select(_ => 0).ToArray();
         int[] weatherCode = new int[168].Select(_ => 45).ToArray();
-        int[] visibility = new int[168].Select(_ => 0).ToArray();
+        double[] visibility = new int[168].Select(_ => 0d).ToArray();
         double[] windSpeed = new double[168].Select(_ => 0d).ToArray();
         int[] windDirection = new int[168].Select(_ => 0).ToArray();
         double[] uvIndex = new double[168].Select(_ => 0d).ToArray();
@@ -294,7 +294,7 @@ public class OpenMeteoWeatherClientTests
         double[] apparentTemperature = new double[168].Select(_ => 0d).ToArray();
         int[] precipitationProbability = new int[168].Select(_ => 0).ToArray();
         int[] weatherCode = new int[168].Select(_ => 45).ToArray();
-        int[] visibility = new int[168].Select(_ => 0).ToArray();
+        double[] visibility = new int[168].Select(_ => 0d).ToArray();
         double[] windSpeed = new double[168].Select(_ => 0d).ToArray();
         int[] windDirection = new int[168].Select(_ => 0).ToArray();
         double[] uvIndex = new double[168].Select(_ => 0d).ToArray();

@@ -53,14 +53,15 @@ public class OpenMeteoWeatherClient : IWeatherClient
                 $"https://api.open-meteo.com/v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_probability_max,windspeed_10m_max,winddirection_10m_dominant&timezone=GMT");
 
             string json = await res.Content.ReadAsStringAsync();
-            var forecast = JsonSerializer.Deserialize<OpenMeteoDailyForecastResponse>(
-                json);
+            var forecast =
+                JsonSerializer.Deserialize<OpenMeteoDailyForecastResponse>(
+                    json);
 
             if (forecast is null)
                 throw new NullReferenceException();
 
             var forecasts = new DailyForecast[forecast.Daily.Time.Length];
-
+            
             for (int i = 0; i < forecasts.Length; i++)
                 forecasts[i] = new DailyForecast(
                     location,
@@ -72,7 +73,7 @@ public class OpenMeteoWeatherClient : IWeatherClient
                     forecast.Daily.Sunrise[i],
                     forecast.Daily.Sunset[i],
                     forecast.Daily.UVIndex[i],
-                    forecast.Daily.PrecipitationProbability[i] / 100,
+                    (double)forecast.Daily.PrecipitationProbability[i] / 100,
                     forecast.Daily.MaximumWindSpeed[i],
                     new(forecast.Daily.WindDirection[i]));
             
@@ -91,7 +92,7 @@ public class OpenMeteoWeatherClient : IWeatherClient
         try
         {
             HttpResponseMessage res = await _httpClient.GetAsync(
-                $"https://api.open-meteo.com/v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&hourly=temperature_2m,apparent_temperature,precipitation_probability,weathercode,visibility,windspeed_10m,uv_index,is_day&timezone=GMT&models=best_match");
+                $"https://api.open-meteo.com/v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&hourly=temperature_2m,apparent_temperature,precipitation_probability,weathercode,visibility,uv_index,is_day,windspeed_1000hPa,winddirection_1000hPa&timezone=GMT&models=best_match");
 
             string json = await res.Content.ReadAsStringAsync();
             var forecast = JsonSerializer.Deserialize<OpenMeteoHourlyForecastResponse>(
@@ -100,21 +101,23 @@ public class OpenMeteoWeatherClient : IWeatherClient
             if (forecast is null)
                 throw new NullReferenceException();
 
-            var forecasts = new HourlyForecast[forecast.Hourly.Time.Length];
-            
+            var forecasts = new HourlyForecast[forecast.Hourly.Temperature.Length];
+
             for (int i = 0; i < forecasts.Length; i++)
+            {
                 forecasts[i] = new HourlyForecast(
                     location,
                     new(forecast.Hourly.WeatherCode[i]),
                     forecast.Hourly.Time[i],
                     forecast.Hourly.Temperature[i],
                     forecast.Hourly.ApparentTemperature[i],
-                    forecast.Hourly.PrecipitationProbability[i] / 100,
+                    (double)forecast.Hourly.PrecipitationProbability[i] / 100,
                     forecast.Hourly.Visibility[i] / 1000,
                     forecast.Hourly.WindSpeed[i],
                     new(forecast.Hourly.WindDirection[i]),
                     forecast.Hourly.UVIndex[i],
                     forecast.Hourly.IsDay[i] == 1);
+            }
 
             return forecasts;
         }
@@ -174,18 +177,18 @@ public class OpenMeteoDailyForecastResponse
 
     [JsonPropertyName("generationtime_ms")]
     public double GenerationTimeMs { get; set; }
-
+    
     [JsonPropertyName("utc_offset_seconds")]
     public int UtcOffsetSeconds { get; set; }
-
+    
     [JsonPropertyName("timezone")]
     public string Timezone { get; set; } = null!;
-
+    
     [JsonPropertyName("timezone_abbreviation")]
     public string TimezoneAbbreviation { get; set; } = null!;
 
     [JsonPropertyName("elevation")]
-    public int Elevation { get; set; }
+    public double Elevation { get; set; }
 
     [JsonPropertyName("daily_units")]
     public OpenMeteoDailyUnits DailyUnits { get; set; } = null!;
@@ -215,12 +218,12 @@ public class OpenMeteoHourlyForecastResponse
     public string TimezoneAbbreviation { get; set; } = null!;
 
     [JsonPropertyName("elevation")]
-    public int Elevation { get; set; }
+    public double Elevation { get; set; }
 
-    [JsonPropertyName("daily_units")]
+    [JsonPropertyName("hourly_units")]
     public OpenMeteoHourlyUnits HourlyUnits { get; set; } = null!;
 
-    [JsonPropertyName("daily")]
+    [JsonPropertyName("hourly")]
     public OpenMeteoHourly Hourly { get; set; } = null!;
 }
 
@@ -374,7 +377,7 @@ public class OpenMeteoHourly
     public int[] WeatherCode { get; set; } = null!;
 
     [JsonPropertyName("visibility")]
-    public int[] Visibility { get; set; } = null!;
+    public double[] Visibility { get; set; } = null!;
 
     [JsonPropertyName("windspeed_1000hPa")]
     public double[] WindSpeed { get; set; } = null!;

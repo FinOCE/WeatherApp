@@ -4,7 +4,6 @@ using WeatherApp.Server.Services;
 namespace WeatherApp.Server.Controllers;
 
 [ApiController]
-[Route("/weather")]
 public class WeatherController : ControllerBase
 {
     private readonly ILogger<WeatherController> _logger;
@@ -18,11 +17,10 @@ public class WeatherController : ControllerBase
         _weatherService = weatherService;
     }
 
-    [HttpGet(Name = "GetForecast")]
+    [HttpGet("/forecast", Name = "GetForecast")]
     public async Task<IActionResult> GetForecast()
     {        
-        string[] validTypes = new string[]
-        {
+        string[] validTypes = {
             "daily",
             "hourly",
             "current-daily",
@@ -60,17 +58,17 @@ public class WeatherController : ControllerBase
         else if (!double.TryParse(rawLongitude[0], out longitude))
             errors.Add("The query param 'long' must be a number");
 
-        if (!Request.Query.TryGetValue("name", out StringValues rawName))
-            errors.Add("The query param 'name' is required");
-
         string name = null!;
         try
         {
+            if (!Request.Query.TryGetValue("name", out StringValues rawName))
+                throw new IndexOutOfRangeException();
+            
             name = rawName[0];
         }
         catch (IndexOutOfRangeException)
         {
-            errors.Add("The query param 'type' is required");
+            errors.Add("The query param 'name' is required");
         }
 
         if (errors.Count > 0)
@@ -127,18 +125,14 @@ public class WeatherController : ControllerBase
                     new string[] { "The query param 'type' must be a valid type" });
             }
         }
-        catch (ArgumentException)
+        catch (ArgumentException ex)
         {
             return new BadRequestObjectResult(
-                new string[]
-                {
-                    "Unable to find weather data for the given location"
-                });
+                new string[] { ex.Message });
         }
     }
 
-    [HttpGet(Name = "GetCurrent")]
-    [Route("/current")]
+    [HttpGet("/forecast/current", Name = "GetCurrent")]
     public async Task<IActionResult> GetCurrent()
     {
         // Validate query params
@@ -180,13 +174,10 @@ public class WeatherController : ControllerBase
             CurrentWeather res = await _weatherService.GetCurrentWeatherAsync(location);
             return new OkObjectResult(res);
         }
-        catch (ArgumentException)
+        catch (ArgumentException ex)
         {
             return new BadRequestObjectResult(
-                new string[]
-                {
-                    "Unable to find weather data for the given location"
-                });
+                new string[] { ex.Message });
         }
     }
 }

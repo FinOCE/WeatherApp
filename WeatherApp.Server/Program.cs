@@ -12,9 +12,16 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IWeatherClient, OpenMeteoWeatherClient>();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 
+builder.Services.AddCors(p => p.AddPolicy("no-cors", b =>
+{
+    b.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
+app.UseCors("no-cors");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
