@@ -9,10 +9,6 @@ import CurrentDisplay, {
   CurrentDisplayFallback,
   CurrentDisplayLoading
 } from "./components/CurrentDisplay"
-import HourPreview, {
-  HourPreviewFallback,
-  HourPreviewLoading
-} from "./components/HourPreview"
 import LocationEntry from "./components/LocationEntry"
 import { Draft } from "./types/Draft"
 import useWeatherData from "./hooks/useWeatherData"
@@ -42,8 +38,8 @@ export default function App() {
   useEffect(() => {
     if (navigator.geolocation)
       navigator.geolocation.getCurrentPosition(position => {
-        const latitude = position.coords.latitude
-        const longitude = position.coords.longitude
+        const latitude = Number(position.coords.latitude.toFixed(3))
+        const longitude = Number(position.coords.longitude.toFixed(3))
         const name = "UNKNOWN"
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
@@ -62,49 +58,57 @@ export default function App() {
   }, [])
 
   return (
-    <div>
-      <LocationEntry
-        location={location.draft}
-        realCoords={realCoords}
-        setLocation={(location: Record<keyof API.Location, string>) =>
-          setLocation(prev => ({ ...prev, draft: location }))
-        }
-        publish={() => {
-          setLocation(prev => ({
-            ...prev,
-            published: {
-              ...prev.draft,
-              latitude: Number(prev.draft.latitude),
-              longitude: Number(prev.draft.longitude)
-            }
-          }))
-          reload()
-        }}
-      />
+    <div className="bg-[#080B1C] text-[#fff] min-w-[100vw] min-h-[100vh]">
+      <div className="flex justify-center min-w-[355px]">
+        <div className="w-[90vw] max-w-[934px] overflow-hidden">
+          <div className="flex flex-col gap-4 my-4">
+            <LocationEntry
+              location={location.draft}
+              realCoords={realCoords}
+              setLocation={(location: Record<keyof API.Location, string>) =>
+                setLocation(prev => ({ ...prev, draft: location }))
+              }
+              publish={() => {
+                setLocation(prev => ({
+                  ...prev,
+                  published: {
+                    ...prev.draft,
+                    latitude: Number(prev.draft.latitude),
+                    longitude: Number(prev.draft.longitude)
+                  }
+                }))
+                reload()
+              }}
+            />
 
-      <Suspenseful
-        data={dailyForecast}
-        error={<CurrentDisplayFallback />}
-        loading={<CurrentDisplayLoading />}
-      >
-        <CurrentDisplay currentWeather={currentWeather.result!} />
-      </Suspenseful>
+            <Suspenseful
+              data={[currentWeather, hourlyForecast]}
+              error={<CurrentDisplayFallback />}
+              loading={<CurrentDisplayLoading />}
+            >
+              <CurrentDisplay
+                currentWeather={currentWeather.result!}
+                currentHourIndex={
+                  hourlyForecast.result?.findIndex(
+                    forecast =>
+                      new Date(forecast.time).getUTCHours() ===
+                      new Date().getUTCHours()
+                  )!
+                }
+                hourlyForecast={hourlyForecast.result!}
+              />
+            </Suspenseful>
 
-      <Suspenseful
-        data={dailyForecast}
-        error={<WeekPreviewFallback />}
-        loading={<WeekPreviewLoading />}
-      >
-        <WeekPreview dailyForecast={dailyForecast.result!} />
-      </Suspenseful>
-
-      <Suspenseful
-        data={dailyForecast}
-        error={<HourPreviewFallback />}
-        loading={<HourPreviewLoading />}
-      >
-        <HourPreview hourlyForecast={hourlyForecast.result!} />
-      </Suspenseful>
+            <Suspenseful
+              data={dailyForecast}
+              error={<WeekPreviewFallback />}
+              loading={<WeekPreviewLoading />}
+            >
+              <WeekPreview dailyForecast={dailyForecast.result!} />
+            </Suspenseful>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

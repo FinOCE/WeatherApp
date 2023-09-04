@@ -8,10 +8,13 @@ export namespace API {
 
   export type Weather = {
     code: number
+    description: string
   }
 
   export type Cardinal = {
     angle: number
+    direction: string
+    directionInitial: string
   }
 
   export type CurrentWeather = {
@@ -50,5 +53,6 @@ export namespace API {
     windDirection: Cardinal
     uvIndex: number
     isDay: boolean
+    time: string
   }
 }

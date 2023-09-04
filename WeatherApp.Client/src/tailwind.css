@@ -1,5 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville&family=Libre+Franklin&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville&family=Libre+Franklin&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080b1c;
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #282b3c;
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #383b4c;
+}
+
+#spinner {
+  animation: spin 2s ease infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
